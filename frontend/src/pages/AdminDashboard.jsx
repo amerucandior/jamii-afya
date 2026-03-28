@@ -3,25 +3,54 @@ import { useAdmin } from "../hooks/useAdmin";
 import { fmt } from "../helpers";
 import ConfirmModal from "../components/ConfirmModal";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { useSnack } from "../context/SnackContext";
 
 
-// ─── ADMIN PAGE ───────────────────────────────────────────────────────────────
-export default function AdminPage({ showSnack }) {
-  const { pending, loading, error, actionId, approve, reject } = useAdmin(); 
+// ------ ADMIN PAGE ----------
+export default function AdminPage() {
+  const { pending, loading, error, actionId, approve, refetch } = useAdmin(); 
+  const showSnack = useSnack();
+
   const [confirming, setConfirming] = useState(null);
   const [viewPdf, setViewPdf] = useState(null);
 
   const handleApprove = async () => {
-  try {
-    await approve(confirming);
-    showSnack(`Claim #${confirming.id} approved. Payout initiated.`, "success");
-  } catch {
-    showSnack("Approval failed. Please try again.", "error");
-  } finally {
-    setConfirming(null);
-  }
-};
+    try {
+      await approve(confirming);
+      showSnack(`Claim #${confirming.id} approved. Payout initiated.`, "success");
+    } catch {
+      showSnack("Approval failed. Please try again.", "error");
+    } finally {
+      setConfirming(null);
+    }
+  };
 
+  // -------- Loading ---------
+  if (loading) {
+    return (
+        <div className="page" style={{ display: "flex", justifyContent: "center", paddingTop: 80 }}>
+        <LoadingSpinner dark />
+      </div>
+    );
+  }
+
+  // --------- Error ----------
+  if (error) {
+    return (
+      <div className="page">
+        <div className="empty-state">
+          <div className="empty-state-icon">⚠️</div>
+          <div className="empty-state-title">Could not load pending claims</div>
+          <div className="empty-state-sub">{error}</div>
+          <button className="btn btn-outline" style={{ marginTop: 16 }} onClick={refetch}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // -----Main-----
   return (
     <div className="page">
       <div className="page-header">
@@ -30,10 +59,13 @@ export default function AdminPage({ showSnack }) {
           <div className="page-subtitle">Pending claims awaiting verification</div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span className="chip chip-pending"><span className="chip-dot" />{pending.length} pending</span>
+          <span className="chip chip-pending">
+            <span className="chip-dot" />{pending.length} pending
+          </span>
         </div>
       </div>
 
+      {/* ------- Table -------*/}
       {pending.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">✅</div>
@@ -60,7 +92,7 @@ export default function AdminPage({ showSnack }) {
                   <td style={{ fontWeight: 600 }}>{c.hospital}</td>
                   <td style={{ color: "var(--ink-secondary)" }}>{c.patient}</td>
                   <td style={{ fontFamily: "var(--font-display)", fontSize: "1rem" }}>{fmt(c.amount)}</td>
-                  <td><span style={{ color: "var(--ink-muted)", fontSize: ".82rem" }}>{c.submittedAgo}</span></td>
+                  <td><span style={{ color: "var(--ink-muted)", fontSize: ".82rem" }}>{c.submitted_ago}</span></td>
                   <td>
                     <div style={{ display: "flex", gap: 8 }}>
                       <button className="btn btn-ghost btn-sm" onClick={() => setViewPdf(c)}>View Bill</button>

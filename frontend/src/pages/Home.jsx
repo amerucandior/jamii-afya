@@ -135,7 +135,7 @@ export default function HomePage() {
         <div>
           <div className="page-title">Active Claims</div>
           <div className="page-subtitle">
-            Verified by Jamii‑Afya administrators
+            Verified by Jamii-Afya administrators
           </div>
         </div>
       </div>

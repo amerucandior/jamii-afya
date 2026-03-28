@@ -1,5 +1,6 @@
 // src/pages/HistoryPage.jsx
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { fmt, pct } from "../helpers";                 
 import { useClaims } from "../hooks/useClaims";      
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -15,11 +16,12 @@ import { useMyDonations } from "../hooks/useMyDonations";
  * setPage      – navigation helper from the parent (e.g. "detail", "history")
  * setDetailClaim – called when the user clicks “View Details”
  */
-export default function HistoryPage({ setPage, setDetailClaim }) {
+export default function HistoryPage() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState("claims");
 
   // -----------------------------------------------------------------
-  // 1️⃣  Pull data from the back‑end
+  // 1.  Pull data from the back‑end
   // -----------------------------------------------------------------
   const {
     claims: myClaims,      // ← only the claims that belong to the current user
@@ -28,19 +30,17 @@ export default function HistoryPage({ setPage, setDetailClaim }) {
     refetch: refetchClaims,
   } = useClaims(); // the hook already knows the auth token
 
-  const { donations: myDonations, 
+  const { 
+    donations: myDonations, 
     loading: donationsLoading, 
     error: donationsError, 
     refetch: refetchDonations 
   } = useMyDonations();
 
   // -----------------------------------------------------------------
-  // 2️⃣  Loading / error handling – identical for both tabs
+  // 2️.  Loading / error handling – identical for both tabs
   // -----------------------------------------------------------------
-  const anyLoading = claimsLoading || donationsLoading;
-  const anyError = claimsError || donationsError;
-
-  if (anyLoading) {
+  if (claimsLoading || donationsLoading) {
     return (
       <div
         className="page"
@@ -51,14 +51,16 @@ export default function HistoryPage({ setPage, setDetailClaim }) {
     );
   }
 
-  if (anyError) {
+  // ----- Error ------
+
+  if (claimsError || donationsError) {
     return (
       <div className="page">
         <div className="empty-state">
           <div className="empty-state-icon">⚠️</div>
           <div className="empty-state-title">Could not load history</div>
           <div className="empty-state-sub">
-            {claimsError?.toString() ?? donationsError?.toString()}
+            {claimsError ?? donationsError}
           </div>
           <button
             className="btn btn-outline"
@@ -76,7 +78,7 @@ export default function HistoryPage({ setPage, setDetailClaim }) {
   }
 
   // -----------------------------------------------------------------
-  // 3️⃣  UI – the same markup you already wrote, just fed with live data
+  // 3️.  UI 
   // -----------------------------------------------------------------
   return (
     <div className="page">
@@ -127,12 +129,27 @@ export default function HistoryPage({ setPage, setDetailClaim }) {
       {/* ------------------- Claims tab ------------------- */}
       {tab === "claims" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {myClaims.map((c) => {
+          {myClaims.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">📋</div>
+              <div className="empty-state-title">No claims yet</div>
+              <div className="empty-state-sub">Claims you submit will appear here.</div>
+              <button
+                className="btn btn-primary"
+                style={{ marginTop: 16 }}
+                onClick={() => navigate("/claims/new")}
+              >
+                + Submit a Claim
+              </button>
+            </div>
+          ) : (
+            /* ---------- Render a card for each claim ---------- */
+            myClaims.map((c) => {
             const p = pct(c.funded, c.amount);
             return (
               <div key={c.id} className="card">
+                {/* Card Header with hospital name and status chip */}
                 <div style={{ padding: "18px 20px" }}>
-                  {/* Header with hospital name and status chip */}
                   <div
                     style={{
                       display: "flex",
@@ -185,29 +202,30 @@ export default function HistoryPage({ setPage, setDetailClaim }) {
                 >
                   <button
                     className="btn btn-outline btn-sm"
-                    onClick={() => {
-                      // The claim we have in `myClaims` already contains everything
-                      // needed for the detail view, so we can just pass it.
-                      setDetailClaim(c);
-                      setPage("detail");
-                    }}
+                    onClick={() => navigate(`/claims/${c.id}`)}
                   >
                     View Details
                   </button>
 
                   {c.status !== "funded" && (
                     <button className="btn btn-ghost btn-sm">Share Link</button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              )}
+            </div>
+          </div>
+        );
+      })
+    )}
+  </div>
+)}
 
       {/* ------------------- Donations tab ------------------- */}
       {tab === "donations" && (
         <div className="card">
+            {myDonations.length === 0 ? (
+            <div style={{ padding: "32px 20px", textAlign: "center", color: "var(--ink-muted)", fontSize: ".88rem" }}>
+              No donations yet.
+            </div>
+          ) : (
           <div style={{ padding: "0 20px" }}>
             {myDonations.map((d, i) => (
               <div key={i} className="timeline-item">
@@ -232,6 +250,7 @@ export default function HistoryPage({ setPage, setDetailClaim }) {
               </div>
             ))}
           </div>
+          )}
         </div>
       )}
     </div>
