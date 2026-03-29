@@ -1,2 +1,5 @@
 backend.md
 backendcontract.txt
+.env
+.env.local
+.env.example
