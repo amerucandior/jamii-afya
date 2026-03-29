@@ -82,3 +82,14 @@ class EmergencyApproval(models.Model):
     class Meta:
         db_table        = 'emergency_approvals'
         unique_together = ('emergency', 'admin')  # one vote per admin
+
+class Hospital(models.Model):
+    name     = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    paybill  = models.CharField(max_length=20, blank=True)
+
+    class Meta:
+        db_table = 'hospitals'
+
+    def __str__(self):
+        return self.name

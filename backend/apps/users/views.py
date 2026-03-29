@@ -2,7 +2,28 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
 from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
+
+import random
+
+from django.utils import timezone
+
+from .models import *
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+    refresh['role'] = 'admin' if user.is_staff else 'member'
+    refresh['id'] = user.id
+    return {
+        'token': str(refresh.access_token),
+        'refresh': str(refresh),
+        'role': 'admin' if user.is_staff else 'member',
+        'id': user.id,
+    }
 
 
 class RegisterView(generics.CreateAPIView):
