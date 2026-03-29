@@ -44,16 +44,16 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    'apps.users',
-    'apps.groups',
-    'apps.contributions',
-    'apps.emergencies',
-    'apps.mpesa',
-    'apps.notifications',
-    'apps.audit',
+    'users',
+    'groups',
+    'contributions',
+    'emergencies',
+    'mpesa',
+    'notifications',
+    'audit',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS # + LOCAL_APPS
 
 
 MIDDLEWARE = [
@@ -67,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
 
 TEMPLATES = [
     {
