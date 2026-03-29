@@ -1,21 +1,34 @@
-// src/hooks/useMyDonations.js
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "./useAuth";
-import { getMyContributions} from "../api/contributions";
+// src/hooks/useMyContributions.js
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './useAuth';
+import { getMyContributions, getSchedule } from '../api/contributions';
 
 export function useMyContributions() {
   const { token } = useAuth();
-  const [donations, setDonations] = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState(null);
+
+  const [contributions, setContributions] = useState([]);
+  const [schedule,      setSchedule]      = useState(null);
+  const [loading,       setLoading]       = useState(true);
+  const [error,         setError]         = useState(null);
 
   const fetch = useCallback(async () => {
-    setLoading(true); setError(null);
-    try   { setDonations(await getMyContributions(token)); }
-    catch (err) { setError(err.message); }
-    finally     { setLoading(false); }
+    setLoading(true);
+    setError(null);
+    try {
+      const [contribs, sched] = await Promise.all([
+        getMyContributions(),
+        getSchedule(),
+      ]);
+      setContributions(contribs);
+      setSchedule(sched);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
 
   useEffect(() => { fetch(); }, [fetch]);
-  return { donations, loading, error, refetch: fetch };
+
+  return { contributions, schedule, loading, error, refetch: fetch };
 }
