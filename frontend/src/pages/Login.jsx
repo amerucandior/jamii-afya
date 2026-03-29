@@ -131,9 +131,9 @@ export default function LoginPage() {
 
         {/* Demo hint */}
         <p style={{ fontSize: ".78rem", color: "var(--ink-muted)", textAlign: "center", marginTop: 14 }}>
-          Demo — Admin: <strong>+254700000000</strong> / <strong>admin123</strong>
+          Demo — Admin: <strong>+254700000000</strong> / <strong>123456</strong>
           &nbsp;·&nbsp;
-          Donor: <strong>+254711111111</strong> / <strong>donor123</strong>
+          Member: <strong>+254712345678</strong> / <strong>123456</strong>
         </p>
       </div>
     </div>

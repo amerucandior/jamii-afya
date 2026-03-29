@@ -41,24 +41,8 @@ function PublicOnlyRoute({ children }) {
   return isAuthenticated ? <Navigate to="/" replace /> : children;
 }
 
- 
-//  Demo mode banner (shown when VITE_MOCK=true) 
-const IS_MOCK = import.meta.env.VITE_MOCK === "true";
-
 export default function AppRoutes() {
   return (
-    <>
-    {IS_MOCK && (
-    <div style={{
-      background: "#C8641A", color: "#fff",
-      padding: "7px 16px", fontSize: "13px",
-      fontWeight: 600, textAlign: "center",
-      letterSpacing: "0.04em", position: "sticky",
-      top: 0, zIndex: 9999,
-    }}>
-      DEMO MODE — Admin: +254700000000 / 000000 · Donor: +254711111111 / 111111
-    </div>
-      )}
     <Routes>
       {/* Public */}
       <Route
@@ -120,6 +104,5 @@ export default function AppRoutes() {
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    </>
   );
 }
