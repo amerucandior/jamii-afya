@@ -15,10 +15,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='change-me-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-"""DEBUG = True
-
-ALLOWED_HOSTS = []
-"""
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
@@ -51,10 +47,9 @@ LOCAL_APPS = [
     'mpesa',
     'notifications',
     'audit',
-    'JamiiAfyaApp',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS # + LOCAL_APPS
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 
 MIDDLEWARE = [
@@ -68,7 +63,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 TEMPLATES = [
     {
