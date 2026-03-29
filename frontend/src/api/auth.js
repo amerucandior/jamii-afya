@@ -24,16 +24,16 @@ import api from './axios';
  * Login and retrieve JWT + role.
  * @param {string} phone
  * @param {string} Password   6-digit string
- * @returns {Promise<{ token: string, role: 'patient'|'donor'|'admin', id: number }>}
+ * @returns {Promise<{ token: string, role: 'member'|'admin', id: number }>}
  */
 export async function loginWithPassword(phone, Password) {
-  const { data } = await api.post('/api/auth/Login/', { phone, Password });
+  const { data } = await api.post('/api/auth/Login/', { phone_number: phone, password: Password });
 
   // Persist to localStorage so the axios interceptor and AuthContext
   // can bootstrap on a page refresh without re-logging in.
   localStorage.setItem('token', data.token);
-  localStorage.setItem('role', data.role);
-  localStorage.setItem('userId', String(data.id));
+  localStorage.setItem('role', data.role.is_staff ? "admin" : "member");
+  localStorage.setItem('userId', String(data.user.id));
 
   return data;
 }

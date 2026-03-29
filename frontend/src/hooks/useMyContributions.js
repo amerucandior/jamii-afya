@@ -1,9 +1,9 @@
 // src/hooks/useMyDonations.js
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
-import { getMyDonations } from "../api/contributions";
+import { getMyContributions} from "../api/contributions";
 
-export function useMyDonations() {
+export function useMyContributions() {
   const { token } = useAuth();
   const [donations, setDonations] = useState([]);
   const [loading,   setLoading]   = useState(true);
@@ -11,7 +11,7 @@ export function useMyDonations() {
 
   const fetch = useCallback(async () => {
     setLoading(true); setError(null);
-    try   { setDonations(await getMyDonations(token)); }
+    try   { setDonations(await getMyContributions(token)); }
     catch (err) { setError(err.message); }
     finally     { setLoading(false); }
   }, [token]);
