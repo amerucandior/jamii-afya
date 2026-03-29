@@ -5,7 +5,7 @@ import { useClaims } from "../hooks/useClaims";
 import { fmt, pct } from "../helpers";              
 import StatusChip from "../components/StatusChip";
 import ProgressBar from "../components/ProgressBar";
-import DonateModal from "../components/ModalDonate";
+import ContributeModal from "../components/ModalContribute";
 import Snackbar from "../components/SnackBar";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -16,7 +16,6 @@ export default function HomePage() {
   const navigate = useNavigate();
   /* ----------------------------------------------------------------- */
 
-  const [donating, setDonating] = useState(null);
   const [snack, setSnack]       = useState({ msg: "", type: "" });
 
   /* ----------  Loading UI ------------------------------------------ */
@@ -190,11 +189,8 @@ export default function HomePage() {
                 </button>
 
                 {claim.status === "approved" && (
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => setDonating(claim)}
-                  >
-                    Donate ♥
+                  <button className="btn btn-outline btn-sm" onClick={() => navigate(`/claims/${claim.id}`)}>
+                    View Details
                   </button>
                 )}
               </div>
@@ -202,18 +198,6 @@ export default function HomePage() {
           );
         })}
       </div>
-
-      {/* ---------- Donate modal – refresh list after close -------- */}
-      {donating && (
-        <DonateModal
-          claim={donating}
-          onClose={() => {
-            setDonating(null);
-            // after a donation we want the latest funded amounts
-            refetch();
-          }}
-        />
-      )}
 
       {/* ---------- Snackbar for toast messages -------------------- */}
       <Snackbar

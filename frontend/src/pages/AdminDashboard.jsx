@@ -17,7 +17,7 @@ export default function AdminPage() {
   const handleApprove = async () => {
     try {
       await approve(confirming);
-      showSnack(`Claim #${confirming.id} approved. Payout initiated.`, "success");
+      showSnack(`Request approved. ${fmt(confirming.amount)} is being sent to ${confirming.member}.`);
     } catch {
       showSnack("Approval failed. Please try again.", "error");
     } finally {
@@ -115,7 +115,9 @@ export default function AdminPage() {
       {confirming && (
         <ConfirmModal
           title={`Approve Claim #${confirming.id}`}
-          message={`This will trigger an M-Pesa B2C payout of ${fmt(confirming.amount)} to ${confirming.hospital}. This action cannot be undone. Proceed?`}
+          message={`Approving this request will release ${fmt(confirming.amount)} 
+          from the group till to ${confirming.member} via M-Pesa.`
+          }
           onConfirm={handleApprove}
           onClose={() => setConfirming(null)}
           loading={actionId === confirming?.id}

@@ -1,7 +1,7 @@
 // src/components/ModalDonate.jsx
 import { useState } from "react";
 import { fmt } from "../helpers";
-import { useDonate } from "../hooks/useDonate";
+import { useContribute } from "../hooks/useContribute";
 import Spinner from "./LoadingSpinner";
 
 /**
@@ -9,12 +9,12 @@ import Spinner from "./LoadingSpinner";
  *
  * @param {{ claim: object, onClose: () => void }} props
  */
-export default function DonateModal({ claim, onClose }) {
+export default function ContributeModal({ schedule, onClose }) {
   // ----------  Hook -------------------------------------------------
-  const { donate, status, error, reset } = useDonate();
+  const { contribute, status, error, reset } = useContribute();
 
   // -----------------------------------------------------------------
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(String(schedule?.amount ?? ''));
 
   // ------ Store Phone Number-----
   const [phone, setPhone] = useState("");
@@ -39,7 +39,7 @@ export default function DonateModal({ claim, onClose }) {
   };
 
   // -----------------------------------------------------------------
-  // Called when the user clicks the big “Donate via M‑Pesa” button
+  // Called when the user clicks the big Contribute via M‑Pesa” button
   const handleDonate = async () => {
     // basic client‑side validation
     if (!amount || Number(amount) <= 0) return;
@@ -51,7 +51,7 @@ export default function DonateModal({ claim, onClose }) {
 
     try {
       const cleanedPhone = phone.replace(/\s+/g, ""); // Pass a cleaned phone number 
-      await donate(claim.id, Number(amount), cleanedPhone);
+      await contribute( Number(amount), cleanedPhone);
       // if the hook resolves without throwing, it will set `status` → "done"
     } catch {
       // `error` is already set by the hook, we just need to swallow the exception
@@ -83,7 +83,7 @@ export default function DonateModal({ claim, onClose }) {
         <header className="modal-header">
           <div>
             <h2 className="modal-title" id="donate-title">
-              Donate to {claim.hospital}
+              Make Contribution
             </h2>
             <div
               style={{
@@ -92,7 +92,7 @@ export default function DonateModal({ claim, onClose }) {
                 marginTop: 4,
               }}
             >
-              Claim #{claim.id} · {fmt(claim.amount - claim.funded)} remaining
+              {schedule?.period} contribution · Due {schedule?.next_due}
             </div>
           </div>
           <button
@@ -109,10 +109,9 @@ export default function DonateModal({ claim, onClose }) {
         {isDone ? (
           <div className="success-state">
             <div className="success-check">✓</div>
-            <div className="success-title">Thank you for your support!</div>
+            <div className="success-title">Contribution received!</div>
             <div className="success-sub">
-              STK push sent to your phone. {fmt(Number(amount))} will go
-              directly to {claim.hospital}.
+              {fmt(Number(amount))} contribution confirmed.
             </div>
             <button
               className="btn btn-ghost btn-full"
@@ -220,7 +219,7 @@ export default function DonateModal({ claim, onClose }) {
                   <Spinner /> {loadingCopy[status]}
                 </>
               ) : (
-                "Donate via M-Pesa"
+                "Contribute via M-Pesa"
               )}
             </button>
 
@@ -232,7 +231,7 @@ export default function DonateModal({ claim, onClose }) {
                 marginTop: 10,
               }}
             >
-              Payment via M-Pesa STK push · Paybill {claim.paybill}
+              Payment via M-Pesa STK push · Paybill {schedule?.paybill}
             </p>
           </>
         )}

@@ -92,7 +92,7 @@ export default function AppRoutes() {
       <Route
         path="/claims/new"
         element={
-          <PrivateRoute allowedRoles={['patient', 'admin']}>
+          <PrivateRoute allowedRoles={['member', 'admin']}>
             <NewClaim />
           </PrivateRoute>
         }

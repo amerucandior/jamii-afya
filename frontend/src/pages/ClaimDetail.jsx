@@ -1,20 +1,16 @@
 // src/pages/ClaimDetail.jsx
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClaimDetail } from "../hooks/useClaims";
 import { fmt, pct } from "../helpers";
 import StatusChip      from "../components/StatusChip";
 import ProgressBar     from "../components/ProgressBar";
 import CircularProgress from "../components/CircularProgress";
-import DonateModal     from "../components/ModalDonate";
 import LoadingSpinner  from "../components/LoadingSpinner";
 
 export default function ClaimDetail() {
   const { claimId }  = useParams();
   const navigate     = useNavigate();
   const { claim, loading, error, refetch } = useClaimDetail(claimId);
-
-  const [donating, setDonating] = useState(false);
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) {
@@ -167,33 +163,14 @@ export default function ClaimDetail() {
             </div>
           </div>
 
-          <button
-            className="btn btn-primary btn-full btn-lg"
-            onClick={() => setDonating(true)}
-          >
-            ♥ Donate to This Case
-          </button>
+
         </div>
       </div>
 
       {/* Sticky donate bar */}
       <div className="sticky-donate">
         <button className="btn btn-ghost" onClick={() => navigate("/")}>← Back</button>
-        <button
-          className="btn btn-primary btn-lg"
-          onClick={() => setDonating(true)}
-          style={{ flex: 1, maxWidth: 320, justifyContent: "center" }}
-        >
-          ♥ Donate Now · {fmt(claim.amount - claim.funded)} needed
-        </button>
       </div>
-
-      {donating && (
-        <DonateModal
-          claim={claim}
-          onClose={() => { setDonating(false); refetch(); }}
-        />
-      )}
     </div>
   );
 }

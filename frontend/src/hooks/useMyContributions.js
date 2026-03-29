@@ -1,7 +1,7 @@
 // src/hooks/useMyDonations.js
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "./useAuth";
-import { getMyDonations } from "../api/donations";
+import { getMyDonations } from "../api/contributions";
 
 export function useMyDonations() {
   const { token } = useAuth();

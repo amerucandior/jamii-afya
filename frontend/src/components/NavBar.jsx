@@ -1,6 +1,7 @@
 // src/components/NavBar.jsx
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import AdminPage from "../pages/AdminDashboard";
 
 export default function Navbar() {
   const navigate     = useNavigate();
@@ -13,6 +14,9 @@ export default function Navbar() {
   };
 
   if (!isAuthenticated) return null;
+
+  // Helper - Roles that can use the 'New Claim' button
+  const canCreateClaim = ["admin", "member"].includes(role);
 
   return (
     <nav className="navbar" role="navigation" aria-label="Main navigation">
@@ -40,13 +44,15 @@ export default function Navbar() {
           🏠 Home
         </button>
 
-        <button
+        { canCreateClaim && (
+          <button
           className={`nav-btn ${pathname === "/claims/new" ? "active" : ""}`}
           aria-current={pathname === "/claims/new" ? "page" : undefined}
           onClick={() => navigate("/claims/new")}
         >
           + New Claim
         </button>
+        )}
 
         <button
           className={`nav-btn ${pathname === "/history" ? "active" : ""}`}

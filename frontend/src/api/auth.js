@@ -14,19 +14,20 @@ import api from './axios';
  * @param {string} phone  E.164 format, e.g. "+254712345678"
  * @returns {Promise<{ message: string }>}
  */
-export async function requestOtp(phone) {
-  const { data } = await api.post('/api/auth/otp/', { phone });
-  return data; // { message: "OTP sent" }
-}
+// Intergrate Later
+// export async function requestOtp(phone) {
+//   const { data } = await api.post('/api/auth/otp/', { phone });
+//   return data; // { message: "OTP sent" }
+// }
 
 /**
- * Verify OTP and retrieve JWT + role.
+ * Login and retrieve JWT + role.
  * @param {string} phone
- * @param {string} otp   6-digit string
+ * @param {string} Password   6-digit string
  * @returns {Promise<{ token: string, role: 'patient'|'donor'|'admin', id: number }>}
  */
-export async function verifyOtp(phone, otp) {
-  const { data } = await api.post('/api/auth/verify/', { phone, otp });
+export async function loginWithPassword(phone, Password) {
+  const { data } = await api.post('/api/auth/Login/', { phone, Password });
 
   // Persist to localStorage so the axios interceptor and AuthContext
   // can bootstrap on a page refresh without re-logging in.

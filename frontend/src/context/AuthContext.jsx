@@ -1,8 +1,8 @@
 import React, { createContext, useReducer, useEffect } from 'react';
-import { requestOtp, verifyOtp, clearAuthStorage } from '../api/auth';
+import { loginWithPassword, clearAuthStorage } from '../api/auth';
 
 // ── Shape ─────────────────────────────────────────────────────────────────────
-// state: { token: string|null, role: 'patient'|'donor'|'admin'|null, userId: number|null }
+// state: { token: string|null, role: member'|'admin'|null, userId: number|null }
 
 const initialState = {
   token: localStorage.getItem('token') || null,
@@ -40,22 +40,14 @@ export function AuthProvider({ children }) {
   }, [state]);
 
   /**
-   * Step 1: request OTP – returns { message } or throws.
+   * Sign in with phone + password.
+   * Sets auth state on success; throws on failure so Login.jsx can show the error.
    */
-  async function login(phone) {
-    return requestOtp(phone);
-  }
-
-  /**
-   * Step 2: verify OTP – sets auth state on success or throws.
-   * @returns {{ token, role, userId }}
-   */
-  async function verify(phone, otp) {
-    const data = await verifyOtp(phone, otp);
+  async function login(phone, password) {
+    const data = await loginWithPassword(phone, password);
     dispatch({ type: 'SET_USER', token: data.token, role: data.role, userId: data.id });
     return data;
   }
-
   function logout() {
     dispatch({ type: 'CLEAR' });
   }
@@ -66,7 +58,6 @@ export function AuthProvider({ children }) {
     userId: state.userId,
     isAuthenticated: Boolean(state.token),
     login,
-    verify,
     logout,
   };
 

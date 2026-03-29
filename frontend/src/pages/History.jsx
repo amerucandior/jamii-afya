@@ -6,7 +6,7 @@ import { useClaims } from "../hooks/useClaims";
 import LoadingSpinner from "../components/LoadingSpinner";
 import StatusChip from "../components/StatusChip";
 import ProgressBar from "../components/ProgressBar";
-import { useMyDonations } from "../hooks/useMyDonations";
+import { useMyContributions } from "../hooks/useMyContributions";
 
 /**
  * History page – shows the logged‑in user’s claims and donations.
@@ -31,16 +31,17 @@ export default function HistoryPage() {
   } = useClaims(); // the hook already knows the auth token
 
   const { 
-    donations: myDonations, 
-    loading: donationsLoading, 
-    error: donationsError, 
-    refetch: refetchDonations 
-  } = useMyDonations();
+    contributions: myContributions, 
+    schedule,
+    loading,
+    error,
+    refetch
+  } = useMyContributions();
 
   // -----------------------------------------------------------------
   // 2️.  Loading / error handling – identical for both tabs
   // -----------------------------------------------------------------
-  if (claimsLoading || donationsLoading) {
+  if (claimsLoading || loading) {
     return (
       <div
         className="page"
@@ -53,21 +54,21 @@ export default function HistoryPage() {
 
   // ----- Error ------
 
-  if (claimsError || donationsError) {
+  if (claimsError || error) {
     return (
       <div className="page">
         <div className="empty-state">
           <div className="empty-state-icon">⚠️</div>
           <div className="empty-state-title">Could not load history</div>
           <div className="empty-state-sub">
-            {claimsError ?? donationsError}
+            {claimsError ?? error}
           </div>
           <button
             className="btn btn-outline"
             style={{ marginTop: 16 }}
             onClick={() => {
               refetchClaims();
-              refetchDonations();
+              refetch();
             }}
           >
             Retry
@@ -99,15 +100,21 @@ export default function HistoryPage() {
           <div className="stat-value blue">{myClaims.length}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Total Donated</div>
+          <div className="stat-label">Total Contributions</div>
           <div className="stat-value green">
-            {fmt(myDonations.reduce((s, d) => s + d.amount, 0))}
+            {fmt(myContributions.reduce((s, d) => s + d.amount, 0))}
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Donations Made</div>
-          <div className="stat-value orange">{myDonations.length}</div>
+          <div className="stat-label">Contributions Made</div>
+          <div className="stat-value orange">{myContributions.length}</div>
         </div>
+        <div className="stat-card">
+        <div className="stat-label">Next Due</div>
+        <div className="stat-value blue" style={{ fontSize: '1rem' }}>
+          {schedule?.next_due ?? '—'}
+        </div>
+      </div>
       </div>
 
       {/* ------------------- Tabs ------------------- */}
@@ -119,10 +126,10 @@ export default function HistoryPage() {
           My Claims
         </button>
         <button
-          className={`tab-btn ${tab === "donations" ? "active" : ""}`}
-          onClick={() => setTab("donations")}
+          className={`tab-btn ${tab === "contributions" ? "active" : ""}`}
+          onClick={() => setTab("contributions")}
         >
-          My Donations
+          My Contributions
         </button>
       </div>
 
@@ -144,10 +151,10 @@ export default function HistoryPage() {
             </div>
           ) : (
             /* ---------- Render a card for each claim ---------- */
-            myClaims.map((c) => {
-            const p = pct(c.funded, c.amount);
+            myClaims.map((d) => {
+            const p = pct(d.funded, d.amount);
             return (
-              <div key={c.id} className="card">
+              <div key={d.id} className="card">
                 {/* Card Header with hospital name and status chip */}
                 <div style={{ padding: "18px 20px" }}>
                   <div
@@ -162,7 +169,7 @@ export default function HistoryPage() {
                   >
                     <div>
                       <div style={{ fontWeight: 700, marginBottom: 2 }}>
-                        {c.hospital}
+                        {d.hospital}
                       </div>
                       <div
                         style={{
@@ -171,10 +178,10 @@ export default function HistoryPage() {
                           color: "var(--blue)",
                         }}
                       >
-                        {fmt(c.amount)}
+                        {fmt(d.amount)}
                       </div>
                     </div>
-                    <StatusChip status={c.status} />
+                    <StatusChip status={d.status} />
                   </div>
 
                   {/* Progress bar + funded text */}
@@ -186,7 +193,7 @@ export default function HistoryPage() {
                       marginTop: 8,
                     }}
                   >
-                    {fmt(c.funded)} of {fmt(c.amount)} raised
+                    {fmt(d.funded)} of {fmt(d.amount)} raised
                   </div>
                 </div>
 
@@ -202,12 +209,12 @@ export default function HistoryPage() {
                 >
                   <button
                     className="btn btn-outline btn-sm"
-                    onClick={() => navigate(`/claims/${c.id}`)}
+                    onClick={() => navigate(`/claims/${d.id}`)}
                   >
                     View Details
                   </button>
 
-                  {c.status !== "funded" && (
+                  {d.status !== "funded" && (
                     <button className="btn btn-ghost btn-sm">Share Link</button>
               )}
             </div>
@@ -219,15 +226,15 @@ export default function HistoryPage() {
 )}
 
       {/* ------------------- Donations tab ------------------- */}
-      {tab === "donations" && (
+      {tab === "contributions" && (
         <div className="card">
-            {myDonations.length === 0 ? (
+            {myContributions.length === 0 ? (
             <div style={{ padding: "32px 20px", textAlign: "center", color: "var(--ink-muted)", fontSize: ".88rem" }}>
               No donations yet.
             </div>
           ) : (
           <div style={{ padding: "0 20px" }}>
-            {myDonations.map((d, i) => (
+            {myContributions.map((d, i) => (
               <div key={i} className="timeline-item">
                 <div className="timeline-icon green">💙</div>
                 <div className="timeline-body">
@@ -242,12 +249,12 @@ export default function HistoryPage() {
                       {fmt(d.amount)}
                     </span>
                   </div>
-                  <div className="timeline-meta">
-                    {d.date} · Claim #{d.claimId}
-                  </div>
+                  <div className="timeline-meta">{d.date}</div>
                 </div>
-                <button className="btn btn-ghost btn-sm">Receipt</button>
-              </div>
+              <span className={`chip ${d.status === 'paid' ? 'chip-funded' : 'chip-pending'}`}>
+                {d.status}
+              </span>              
+            </div>
             ))}
           </div>
           )}
