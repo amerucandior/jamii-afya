@@ -1,0 +1,11 @@
+name = "jamii-afya-backend"
+version = "0.1.0"
+description = "Jamii Afya backend – Django REST API"
+requires-python = ">=3.12"
+
+# No build system is required because we only use `uv` for dependency management.
+# uv will automatically look for a `uv.lock` file next to this file.
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,46 @@
+# ----------------------------------------------------------------------
+# Python byte‑code, caches, virtual environments, and local config files
+# ----------------------------------------------------------------------
+__pycache__/
+*.py[cod]          # *.pyc, *.pyo, *.pyd
+*.pyo
+*.pyd
+
+# Virtual‑env directories (if you ever use a different name, add it)
+.venv/
+venv/
+env/
+ENV/
+
+# Local environment files – keep only the template
+.env
+.env.*
+# (real secrets stay out of the repository)
+
+# IDE / editor artefacts
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# OS‑specific junk
+.DS_Store
+Thumbs.db
+
+# Sensitive material – never commit keys / certificates
+*.pem
+*.key
+*.crt
+
+# Miscellaneous generated files you don't want in Git
+*.log
+coverage.xml
+htmlcov/
+dist/
+build/
+*.egg-info/
+*.egg
+.EGG-INFO/
+*.whl
