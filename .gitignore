@@ -1,0 +1,14 @@
+# OS / editor artefacts
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace
+
+# Secrets – never commit
+*.pem
+*.key
+*.crt
